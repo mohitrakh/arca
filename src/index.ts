@@ -2,16 +2,25 @@ import 'dotenv/config';
 import express from 'express';
 import env from './config/env';
 import { globalErrorHandler } from './middleware/error.middleware';
+import userRouter from './modules/users/users.routes';
+import cors from 'cors'
 
 const app = express();
+app.use(cors({
+    origin: "*"
+}));
 
+app.use(express.json())
 app.get('/', (req, res) => {
-    res.send('Server is running!');
+    res.json({
+        message: "Hello"
+    })
 });
 
+app.use("/api/v1/auth", userRouter)
 
 app.use(globalErrorHandler)
 
-app.listen(env, () => {
+app.listen(env.port, () => {
     console.log(`🚀 Server running on http://localhost:${env.port}`);
 });

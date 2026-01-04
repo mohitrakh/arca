@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { db } from "../../db";
 import { taskTable } from "../../db/schema/tasks";
 import { ApiResponse } from "../../utils/api-response";
+import { and, asc, desc, eq, like, SQL } from "drizzle-orm";
+import { AppError } from "../../utils/app-error";
+import { ListTasksInput } from "./tasks.schema";
+import { listTasks } from "./tasks.service";
 
 
 const createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +28,18 @@ const createTask = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 
+const getTasks = async (req: Request, res: Response, next: NextFunction) => {
+    const tasks = await listTasks({
+        projectId: req.project!.id,
+        orgId: req.org!.id,
+        query: req.query as unknown as ListTasksInput,
+    });
+
+    return ApiResponse.success(res, tasks, "Tasks retrieved successfully");
+};
+
+
 export {
-    createTask
+    createTask,
+    getTasks
 }

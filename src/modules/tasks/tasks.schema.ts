@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TASK_PRIORITY_LIST, TASK_STATUS_LIST } from '../../constants/task';
 
 /* ============================================================
    CREATE TASK
@@ -31,3 +32,28 @@ export const createTaskSchema = z.object({
         )
         .optional(),
 });
+
+
+export const listTasksQuerySchema = z.object({
+    query: z.object({
+        // 1. Pagination
+        page: z.coerce.number().min(1).default(1),
+        limit: z.coerce.number().min(1).max(100).default(10),
+
+        // 2. filters 
+        status: z.enum(TASK_STATUS_LIST).optional(),
+        priority: z.enum(TASK_PRIORITY_LIST).optional(),
+        assigned_to: z.string().optional(),
+
+        // 3. search
+
+        search: z.string().optional(),
+
+        // 4. Sorting
+
+        sortBy: z.enum(['created_at', 'due_date', 'priority']).default('created_at'),
+        sortOrder: z.enum(['asc', 'desc']).default('desc'),
+    })
+})
+
+export type ListTasksInput = z.infer<typeof listTasksQuerySchema>["query"];
