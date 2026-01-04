@@ -1,0 +1,29 @@
+import { NextFunction, Request, Response } from "express";
+import { db } from "../../db";
+import { taskTable } from "../../db/schema/tasks";
+import { ApiResponse } from "../../utils/api-response";
+
+
+const createTask = async (req: Request, res: Response, next: NextFunction) => {
+    const task = await db.insert(taskTable).values({
+        title: req.body.title,
+        description: req.body.description,
+        assigned_to: req.body.assigned_to,
+        priority: req.body.priority,
+        due_date: req.body.due_date,
+
+        project_id: req.project!.id,
+        organization_id: req.org!.id,
+        created_by: req.auth!.userId,
+        status: 'CREATED'
+    }).$returningId();
+
+    console.log('TaskCreated', task[0].id)
+
+    return ApiResponse.success(res, task, "Task created Successfully", 201)
+}
+
+
+export {
+    createTask
+}

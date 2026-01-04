@@ -15,5 +15,8 @@ export const taskTable = mysqlTable('tasks', {
     priority: mysqlEnum('priority', ['LOW', 'MEDIUM', 'HIGH']).notNull().$default(() => 'MEDIUM'),
     due_date: date(),
     created_at: datetime().notNull().$default(() => new Date()),
-    updated_at: datetime().notNull().$default(() => new Date())
+    updated_at: datetime().notNull().$default(() => new Date()),
+    created_by: varchar({ length: 128 })
+        .notNull()
+        .references(() => userTable.id, { onDelete: 'restrict' })
 });
