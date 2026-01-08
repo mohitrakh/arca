@@ -7,25 +7,28 @@ import { ORG_ROLES, OrgRole } from "../../constants/roles";
 
 export default class OrganizatonService {
   static async createOrg(payload: CreateOrgInput, userId: string) {
-    console.log("payload before updating the value", payload, userId);
-    const org = await db.insert(organizationTable).values({
-      name: payload.name,
-      description: payload.description,
-      created_by: userId,
-      is_active: true,
-    }).$returningId();
 
-    // create relationship as well
+    return await db.transaction(async (tx) => {
+      const org = await tx.insert(organizationTable).values({
+        name: payload.name,
+        description: payload.description,
+        created_by: userId,
+        is_active: true,
+      }).$returningId();
 
-    await db.insert(orgMembershipTable).values({
-      organization_id: org[0].id,
-      user_id: userId,
-      role: ORG_ROLES.ADMIN,
-      is_active: true,
-      joined_at: new Date(),
+      // create relationship as well
+
+      await tx.insert(orgMembershipTable).values({
+        organization_id: org[0].id,
+        user_id: userId,
+        role: ORG_ROLES.ADMIN,
+        is_active: true,
+        joined_at: new Date(),
+      });
+
+      return org;
     });
 
-    return org;
   }
 
   static async getOrgs(userId: string) {

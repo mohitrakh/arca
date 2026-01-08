@@ -32,3 +32,5 @@ taskRouter.get(
     validate(listTasksQuerySchema),
     getTasks
 )
+
+export default taskRouter
