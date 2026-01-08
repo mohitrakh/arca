@@ -1,4 +1,4 @@
-import { boolean, date, datetime, mysqlEnum, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { date, mysqlEnum, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
 import { createId } from '@paralleldrive/cuid2';
 import { organizationTable } from './organization';
 import { userTable } from './users';
@@ -15,8 +15,8 @@ export const taskTable = mysqlTable('tasks', {
     status: mysqlEnum('status', TASK_STATUS_LIST).notNull().$default(() => 'CREATED'),
     priority: mysqlEnum('priority', TASK_PRIORITY_LIST).notNull().$default(() => 'MEDIUM'),
     due_date: date(),
-    created_at: datetime().notNull().$default(() => new Date()),
-    updated_at: datetime().notNull().$default(() => new Date()),
+    created_at: timestamp('created_at').notNull().defaultNow(),
+    updated_at: timestamp('updated_at').notNull().defaultNow(),
     created_by: varchar({ length: 128 })
         .notNull()
         .references(() => userTable.id, { onDelete: 'restrict' })

@@ -22,6 +22,13 @@
       "when": 1767520618707,
       "tag": "0002_nasty_steel_serpent",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1767709291370,
+      "tag": "0003_spotty_big_bertha",
+      "breakpoints": true
     }
   ]
 }

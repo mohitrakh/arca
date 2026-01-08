@@ -1,4 +1,4 @@
-import { boolean, date, datetime, int, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { boolean, timestamp, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
 import { createId } from '@paralleldrive/cuid2';
 
 export const userTable = mysqlTable('users', {
@@ -7,6 +7,6 @@ export const userTable = mysqlTable('users', {
     email: varchar({ length: 255 }).notNull(),
     password_hash: varchar({ length: 255 }).notNull(),
     is_active: boolean().notNull().$default(() => true),
-    created_at: datetime().notNull().$default(() => new Date()),
-    updated_at: datetime().notNull().$default(() => new Date())
+    created_at: timestamp('created_at').notNull().defaultNow(),
+    updated_at: timestamp('updated_at').notNull().defaultNow()
 });

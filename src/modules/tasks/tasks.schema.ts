@@ -33,6 +33,7 @@ export const createTaskSchema = z.object({
         .optional(),
 });
 
+export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 
 export const listTasksQuerySchema = z.object({
     query: z.object({

@@ -1,4 +1,4 @@
-import { boolean, date, datetime, int, mysqlEnum, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { boolean, date, datetime, int, mysqlEnum, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
 import { createId } from '@paralleldrive/cuid2';
 import { organizationTable } from './organization';
 import { userTable } from './users';
@@ -10,5 +10,5 @@ export const orgMembershipTable = mysqlTable('organization_memberships', {
     user_id: varchar({ length: 128 }).notNull().references(() => userTable.id, { onDelete: 'cascade' }),
     role: mysqlEnum('role', ORG_ROLE_VALUES).notNull(),
     is_active: boolean().notNull().$default(() => true),
-    joined_at: datetime().notNull().$default(() => new Date())
+    joined_at: timestamp('joined_at').notNull().defaultNow()
 });

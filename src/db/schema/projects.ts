@@ -1,4 +1,4 @@
-import { date, datetime, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { date, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
 import { createId } from '@paralleldrive/cuid2';
 import { organizationTable } from './organization';
 import { clientTable } from './clients';
@@ -12,6 +12,6 @@ export const projectTable = mysqlTable('projects', {
     start_date: date(),
     due_date: date(),
     tech_stack: varchar({ length: 512 }),
-    created_at: datetime().notNull().$default(() => new Date()),
-    updated_at: datetime().notNull().$default(() => new Date())
+    created_at: timestamp('created_at').notNull().defaultNow(),
+    updated_at: timestamp('updated_at').notNull().defaultNow()
 });
