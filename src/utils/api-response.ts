@@ -10,13 +10,14 @@ export class ApiResponse {
     }
 
     // Helpful for paginated results or large lists
-    static list<T>(res: Response, data: T[], count: number, message = "Success") {
+    static list<T>(res: Response, data: T[], count: number, pagination: any, message = "Success") {
         return res.status(200).json({
             success: true,
             message,
             results: data.length,
             total: count,
             data,
+            pagination
         });
     }
 }

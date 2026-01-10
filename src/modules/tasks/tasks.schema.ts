@@ -22,7 +22,7 @@ export const createTaskSchema = z.object({
         .optional(),
 
     priority: z
-        .enum(['LOW', 'MEDIUM', 'HIGH'])
+        .enum(TASK_PRIORITY_LIST)
         .optional(),
 
     due_date: z
@@ -34,6 +34,16 @@ export const createTaskSchema = z.object({
 });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
+
+// Update Task Payload
+
+// 2. Create the Update schema by making the Create schema partial
+export const updateTaskSchema = createTaskSchema.partial().refine(
+    (data) => Object.keys(data).length > 0,
+    { message: "At least one field must be provided for update" }
+);
+
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 
 export const listTasksQuerySchema = z.object({
     query: z.object({

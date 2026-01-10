@@ -8,7 +8,7 @@ import { requireOrgMember } from "../../middleware/require-org-member";
 
 const projectRouter = express.Router();
 
-// create organization
+// create 
 projectRouter.post("/", requireAuth, resolveOrganization, requireOrgMember, validate(createProjectSchema), createProject);
 
 // get all projects
