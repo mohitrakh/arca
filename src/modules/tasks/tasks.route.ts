@@ -4,7 +4,7 @@ import { requireOrgMember } from '../../middleware/require-org-member'
 import { requireProjectMember } from '../../middleware/require-project-member'
 import { requireProjectRole } from '../../middleware/require-project-role'
 import { validate } from '../../middleware/validate'
-import { createTask, deleteTask, getTasks, updateTask } from './tasks.controller'
+import { createTask, deleteTask, getTask, getTasks, updateTask, updateTaskStatus } from './tasks.controller'
 import { createTaskSchema, listTasksQuerySchema, updateTaskSchema } from './tasks.schema'
 import { resolveOrganization } from '../../middleware/resolve-organization'
 import { PROJECT_ROLE_VALUES } from '../../constants/roles'
@@ -33,7 +33,7 @@ taskRouter.get(
 )
 
 
-taskRouter.put(
+taskRouter.patch(
     '/projects/:projectId/tasks/:taskId',
     requireAuth,
     resolveOrganization,
@@ -43,6 +43,27 @@ taskRouter.put(
     validate(updateTaskSchema),
     updateTask
 );
+
+taskRouter.get(
+    '/projects/:projectId/tasks/:taskId',
+    requireAuth,
+    resolveOrganization,
+    requireOrgMember,
+    requireProjectMember,
+    requireProjectRole(PROJECT_ROLE_VALUES),
+    getTask
+)
+
+taskRouter.patch(
+    '/projects/:projectId/tasks/:taskId/status',
+    requireAuth,
+    resolveOrganization,
+    requireOrgMember,
+    requireProjectMember,
+    requireProjectRole(PROJECT_ROLE_VALUES),
+    validate(updateTaskSchema),
+    updateTaskStatus,
+)
 
 taskRouter.delete(
     '/projects/:projectId/tasks/:taskId',

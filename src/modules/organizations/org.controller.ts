@@ -50,4 +50,21 @@ const addMembersToOrg = async (
   );
 };
 
-export { createOrganization, getOrganizations, addMembersToOrg };
+const removeMembersFromOrg = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userRole = req.org?.role!;
+  const memberId = req.params.id;
+  const orgId = req.org?.id!;
+  const org = await OrganizatonService.removeMembersFromOrg(orgId, userRole, memberId);
+  return ApiResponse.success(
+    res,
+    org,
+    "Successfully removed members from organization",
+    201
+  );
+};
+
+export { createOrganization, getOrganizations, addMembersToOrg, removeMembersFromOrg };

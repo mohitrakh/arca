@@ -4,6 +4,7 @@ import { buildTaskFilters, getTaskOrderBy } from "./utils";
 import { CreateTaskInput, ListTasksInput, UpdateTaskInput } from "./tasks.schema";
 import { and, count, eq } from "drizzle-orm";
 import { AppError } from "../../utils/app-error";
+import { TaskStatus } from "../../constants/task";
 
 export default class TaskService {
     static async createtask(payload: CreateTaskInput, projectId: string, organizationId: string, userId: string) {
@@ -132,4 +133,46 @@ export default class TaskService {
         );
     }
 
+    static async getTask(taskId: string, orgId: string, projectId: string) {
+        const task = await db.select().from(taskTable).where(
+            and(
+                eq(taskTable.id, taskId),
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
+            )
+        );
+
+        if (!task.length || !task[0]) {
+            throw new AppError('Task not found', 404);
+        }
+
+        return task[0];
+    }
+
+    static async updateTaskStatus(taskId: string, orgId: string, projectId: string, status: TaskStatus) {
+        const task = await db.select().from(taskTable).where(
+            and(
+                eq(taskTable.id, taskId),
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
+            )
+        );
+
+        if (!task.length || !task[0]) {
+            throw new AppError('Task not found', 404);
+        }
+
+        const updateData = {
+            status,
+            updated_at: new Date()
+        };
+
+        return await db.update(taskTable).set(updateData).where(
+            and(
+                eq(taskTable.id, taskId),
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
+            )
+        );
+    }
 }

@@ -4,6 +4,7 @@ import { organizationTable } from "../../db/schema/organization";
 import { CreateOrgInput } from "./org.schema";
 import { orgMembershipTable } from "../../db/schema/orgMembership";
 import { ORG_ROLES, OrgRole } from "../../constants/roles";
+import { AppError } from "../../utils/app-error";
 
 export default class OrganizatonService {
   static async createOrg(payload: CreateOrgInput, userId: string) {
@@ -69,7 +70,7 @@ export default class OrganizatonService {
       );
 
     if (existingMember.length > 0) {
-      throw new Error("User is already a member of the organization");
+      throw new AppError("User is already a member of the organization", 400);
     }
 
     const isAdmin = await db
@@ -83,12 +84,30 @@ export default class OrganizatonService {
       );
 
     if (isAdmin.length === 0) {
-      throw new Error("User is not an admin of the organization");
+      throw new AppError("User is not an admin of the organization", 400);
     }
 
     return await db
       .insert(orgMembershipTable)
       .values({ organization_id: orgId, user_id: memberId, role: ORG_ROLES.MEMBER, is_active: true, joined_at: new Date() })
       .$returningId();
+  }
+
+  static async removeMembersFromOrg(
+    orgId: string,
+    userRole: string,
+    memberId: string
+  ) {
+    if (userRole !== ORG_ROLES.ADMIN) {
+      throw new AppError("User is not an admin of the organization", 400);
+    }
+    return await db
+      .delete(orgMembershipTable)
+      .where(
+        and(
+          eq(orgMembershipTable.organization_id, orgId),
+          eq(orgMembershipTable.user_id, memberId)
+        )
+      );
   }
 }
