@@ -23,7 +23,14 @@ export const registerUser = async (name: string, email: string, password: string
         password_hash: hashedPassword,
     }).$returningId();
 
-    return user[0];
+    // Generate JWT token
+    const token = jwt.sign(
+        { userId: user[0].id, email },
+        env.jwtSecret,
+        { expiresIn: '7d' }
+    );
+
+    return { user, token };
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -36,7 +43,7 @@ export const loginUser = async (email: string, password: string) => {
 
     // Generate JWT token
     const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email },
         env.jwtSecret,
         { expiresIn: '7d' }
     );

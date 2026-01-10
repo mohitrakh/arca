@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ORG_ROLES } from '../../constants/roles';
 
 export const createOrgSchema = z.object({
     name: z.string().max(255, "Name must be at most 255 lenght long"),
@@ -10,3 +11,10 @@ export const createOrgSchema = z.object({
 })
 
 export type CreateOrgInput = z.infer<typeof createOrgSchema>;
+
+export const addUserToOrgSchema = z.object({
+    email: z.email("Invalid email"),
+    role: z.enum([ORG_ROLES.ADMIN, ORG_ROLES.MEMBER]),
+})
+
+export type AddUserToOrgInput = z.infer<typeof addUserToOrgSchema>;

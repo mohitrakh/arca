@@ -5,7 +5,6 @@ import { RegisterUserInput, LoginUserInput } from './users.schema';
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log("Request body", req.body)
         const body = req.body as RegisterUserInput;
         const user = await registerUser(body.name, body.email, body.password);
         return ApiResponse.success(res, user, 'User registered successfully', 201);

@@ -1,6 +1,6 @@
 import express from "express";
 import { validate } from "../../middleware/validate";
-import { createOrgSchema } from "./org.schema";
+import { addUserToOrgSchema, createOrgSchema } from "./org.schema";
 import {
   addMembersToOrg,
   createOrganization,
@@ -21,9 +21,10 @@ orgRouter.get("/", requireAuth, getOrganizations);
 
 // add members to organization
 orgRouter.post(
-  "/:id/members",
+  "/members",
   requireAuth,
   resolveOrganization,
+  validate(addUserToOrgSchema),
   addMembersToOrg
 );
 

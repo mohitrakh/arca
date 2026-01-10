@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { and, eq } from "drizzle-orm";
 import { db } from "../../db";
 import { organizationTable } from "../../db/schema/organization";
@@ -5,6 +6,12 @@ import { CreateOrgInput } from "./org.schema";
 import { orgMembershipTable } from "../../db/schema/orgMembership";
 import { ORG_ROLES, OrgRole } from "../../constants/roles";
 import { AppError } from "../../utils/app-error";
+import { userTable } from "../../db/schema/users";
+import { organizationInvitesTable } from "../../db/schema/org-invites";
+import { ORG_INVITE_STATUS, OrgInviteStatus } from "../../constants/invites";
+import { emailService } from '../../services/email/email.service';
+import env from '../../config/env';
+
 
 export default class OrganizatonService {
   static async createOrg(payload: CreateOrgInput, userId: string) {
@@ -55,24 +62,12 @@ export default class OrganizatonService {
   }
 
   static async addMembersToOrg(
+    email: string,
     orgId: string,
-    userId: string,
-    memberId: string
+    inviterId: string,
+    role: OrgRole = 'MEMBER'
   ) {
-    const existingMember = await db
-      .select()
-      .from(orgMembershipTable)
-      .where(
-        and(
-          eq(orgMembershipTable.organization_id, orgId),
-          eq(orgMembershipTable.user_id, memberId)
-        )
-      );
-
-    if (existingMember.length > 0) {
-      throw new AppError("User is already a member of the organization", 400);
-    }
-
+    const [org] = await db.select().from(organizationTable).where(eq(organizationTable.id, orgId));
     const isAdmin = await db
       .select()
       .from(orgMembershipTable)
@@ -87,10 +82,54 @@ export default class OrganizatonService {
       throw new AppError("User is not an admin of the organization", 400);
     }
 
-    return await db
-      .insert(orgMembershipTable)
-      .values({ organization_id: orgId, user_id: memberId, role: ORG_ROLES.MEMBER, is_active: true, joined_at: new Date() })
-      .$returningId();
+    const [existingUser] = await db.select().from(userTable).where(eq(userTable.email, email));
+
+    if (existingUser) {
+      const [membership] = await db.select().from(orgMembershipTable).where(
+        and(
+          eq(orgMembershipTable.organization_id, orgId),
+          eq(orgMembershipTable.user_id, existingUser.id)
+        )
+      );
+      if (membership) throw new AppError("User is already a member", 400);
+    }
+
+    // check if the there is already pending invite
+
+    const [pending] = await db.select().from(organizationInvitesTable).where(
+      and(
+
+        eq(organizationInvitesTable.organization_id, orgId),
+        eq(organizationInvitesTable.email, email),
+        eq(organizationInvitesTable.status, ORG_INVITE_STATUS.PENDING as OrgInviteStatus)
+      )
+    )
+
+    if (pending) throw new AppError("User is already invited", 400);
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await db.insert(organizationInvitesTable).values({
+      organization_id: orgId,
+      inviter_id: inviterId,
+      email,
+      token,
+      expires_at: expiresAt,
+      role,
+      status: ORG_INVITE_STATUS.PENDING as OrgInviteStatus,
+    }).$returningId();
+
+    const inviteUrl = `${env.frontendUrl}/accept-invite?token=${token}`;
+
+    const htmlContent = existingUser
+      ? `<h1>Join ${org.name}</h1><p>Hi ${existingUser.name}, you've been invited to join <b>${org.name}</b> on Arca.</p><a href="${inviteUrl}">Accept Invitation</a>`
+      : `<h1>Welcome to Arca!</h1><p>You've been invited to join <b>${org.name}</b>. Create an account to get started.</p><a href="${inviteUrl}">Register & Join</a>`;
+
+    await emailService.sendHtmlEmail(email, `Invitation to join ${org.name}`, htmlContent);
+
+    return { message: "Invitation sent successfully" };
   }
 
   static async removeMembersFromOrg(

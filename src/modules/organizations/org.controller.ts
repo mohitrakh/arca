@@ -38,14 +38,14 @@ const addMembersToOrg = async (
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.auth?.userId!;
-  const memberId = req.params.id;
   const orgId = req.org?.id!;
-  const org = await OrganizatonService.addMembersToOrg(orgId, userId, memberId);
+  const email = req.body.email;
+  const role = req.body.role;
+  const result = await OrganizatonService.addMembersToOrg(email, orgId, req.auth?.userId!, role);
   return ApiResponse.success(
     res,
-    org,
-    "Successfully added members to organization",
+    result,
+    "Successfully invited user to organization",
     201
   );
 };
