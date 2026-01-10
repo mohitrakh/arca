@@ -32,8 +32,8 @@ const getTasks = async (req: Request, res: Response, next: NextFunction) => {
 const updateTask = async (req: Request, res: Response, next: NextFunction) => {
     const { taskId } = req.params;
     const orgId = req.org?.id!
-
-    const result = await TaskService.updateTask(taskId, orgId, req.body);
+    const projectId = req.project?.id!
+    const result = await TaskService.updateTask(taskId, orgId, projectId, req.body);
     // Send paginated response
     return ApiResponse.success(res, result, "Task updated successfully", 200);
 
@@ -42,8 +42,9 @@ const updateTask = async (req: Request, res: Response, next: NextFunction) => {
 const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
     const { taskId } = req.params;
     const orgId = req.org?.id!
+    const projectId = req.project?.id!
 
-    const result = await TaskService.deleteTask(taskId, orgId)
+    const result = await TaskService.deleteTask(taskId, orgId, projectId);
 
     return ApiResponse.success(res, result, "Task deleted successfully", 200);
 };

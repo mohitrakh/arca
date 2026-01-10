@@ -56,6 +56,9 @@ export default class TaskService {
         const data = await db
             .select()
             .from(taskTable)
+            .where(
+                eq(taskTable.organization_id, orgId)
+            )
             .limit(limit)
             .offset(offset)
 
@@ -72,12 +75,13 @@ export default class TaskService {
         };
     };
 
-    static async updateTask(taskId: string, orgId: string, payload: UpdateTaskInput) {
+    static async updateTask(taskId: string, orgId: string, projectId: string, payload: UpdateTaskInput) {
 
         const task = await db.select().from(taskTable).where(
             and(
                 eq(taskTable.id, taskId),
-                eq(taskTable.organization_id, orgId)
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
             )
         );
 
@@ -99,17 +103,19 @@ export default class TaskService {
         return await db.update(taskTable).set(updateData).where(
             and(
                 eq(taskTable.id, taskId),
-                eq(taskTable.organization_id, orgId)
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
             )
         );
     }
 
-    static async deleteTask(taskId: string, orgId: string) {
+    static async deleteTask(taskId: string, orgId: string, projectId: string) {
 
         const task = await db.select().from(taskTable).where(
             and(
                 eq(taskTable.id, taskId),
-                eq(taskTable.organization_id, orgId)
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
             )
         );
 
@@ -120,7 +126,8 @@ export default class TaskService {
         return await db.delete(taskTable).where(
             and(
                 eq(taskTable.id, taskId),
-                eq(taskTable.organization_id, orgId)
+                eq(taskTable.organization_id, orgId),
+                eq(taskTable.project_id, projectId)
             )
         );
     }
