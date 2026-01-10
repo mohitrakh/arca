@@ -176,4 +176,19 @@ export class ProjectService {
         return data
     }
 
+    static async getProjectById(projectId: string, orgId: string) {
+        const project = await db.select().from(projectTable).where(
+            and(
+                eq(projectTable.id, projectId),
+                eq(projectTable.organization_id, orgId)
+            )
+        )
+
+        if (!project.length || !project[0]) {
+            throw new AppError('Project not found in this organization', 404);
+        }
+
+        return project[0]
+    }
+
 }

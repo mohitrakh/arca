@@ -94,6 +94,18 @@ const fetchUserOfProjects = async (req: Request, res: Response, next: NextFuncti
     )
 }
 
+const getProjectById = async (req: Request, res: Response, next: NextFunction) => {
+    const { projectId } = req.params;
+    const orgId = req.org?.id!;
+    const project = await ProjectService.getProjectById(projectId, orgId);
+    return ApiResponse.success(
+        res,
+        project,
+        "Successfully fetched project",
+        200
+    )
+}
+
 export {
     createProject,
     getAllProjects,
@@ -101,5 +113,6 @@ export {
     deleteProject,
     addUsersToProject,
     removeUsersFromProject,
-    fetchUserOfProjects
+    fetchUserOfProjects,
+    getProjectById
 }

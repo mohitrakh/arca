@@ -1,6 +1,6 @@
 import express from "express";
 import { validate } from "../../middleware/validate";
-import { addUsersToProject, createProject, deleteProject, fetchUserOfProjects, getAllProjects, removeUsersFromProject, updateProject } from "./projects.controller";
+import { addUsersToProject, createProject, deleteProject, fetchUserOfProjects, getAllProjects, getProjectById, removeUsersFromProject, updateProject } from "./projects.controller";
 import { resolveOrganization } from "../../middleware/resolve-organization";
 import { requireAuth } from "../../middleware/require-auth";
 import { addMembersToProjectSchema, createProjectSchema, updateProjectSchema } from "./project.schema";
@@ -10,7 +10,7 @@ import { requireProjectMember } from "../../middleware/require-project-member";
 
 const projectRouter = express.Router();
 
-// create 
+// create project
 projectRouter.post("/", requireAuth, resolveOrganization, requireOrgMember, validate(createProjectSchema), createProject);
 
 // get all projects
@@ -30,4 +30,8 @@ projectRouter.get("/:projectId/members", requireAuth, resolveOrganization, requi
 
 // delete project
 projectRouter.delete("/:projectId", requireAuth, resolveOrganization, requireOrgMember, requireProjectMember, requireProjectRole(['PROJECT_MANAGER']), deleteProject);
+
+// get project by id
+projectRouter.get("/:projectId", requireAuth, resolveOrganization, requireOrgMember, requireProjectMember, getProjectById);
+
 export default projectRouter;
