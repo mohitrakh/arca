@@ -1,6 +1,7 @@
 # Dependency directories
 node_modules/
 jspm_packages/
+public/
 
 # Build directory (TypeScript output)
 dist/

@@ -191,4 +191,28 @@ export class ProjectService {
         return project[0]
     }
 
+
+    static async updateUserRoleInProject(projectId: string, orgId: string, orgRole: OrgRole, targetUserId: string, newRole: ProjectRole) {
+        // 1. Permission Check
+        if (orgRole !== ORG_ROLES.ADMIN) {
+            throw new AppError('Only Organization Admins can change member roles', 403);
+        }
+
+        // 2. Validate Membership
+        const [membership] = await db.select().from(projectMembershipTable).where(
+            and(
+                eq(projectMembershipTable.project_id, projectId),
+                eq(projectMembershipTable.user_id, targetUserId)
+            )
+        );
+
+        if (!membership) {
+            throw new AppError("User is not a member of this project", 404);
+        }
+
+        // 3. Update Role
+        return await db.update(projectMembershipTable)
+            .set({ role: newRole })
+            .where(eq(projectMembershipTable.id, membership.id));
+    }
 }

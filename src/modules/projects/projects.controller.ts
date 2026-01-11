@@ -106,6 +106,18 @@ const getProjectById = async (req: Request, res: Response, next: NextFunction) =
     )
 }
 
+
+const updateProjectMemberRole = async (req: Request, res: Response, next: NextFunction) => {
+    const { projectId, userId } = req.params;
+    const { role } = req.body;
+    const orgId = req.org?.id!;
+    const orgRole = req.org?.role!;
+
+    const result = await ProjectService.updateUserRoleInProject(projectId, orgId, orgRole, userId, role);
+
+    return ApiResponse.success(res, result, "Project member role updated successfully", 200);
+}
+
 export {
     createProject,
     getAllProjects,
@@ -114,5 +126,6 @@ export {
     addUsersToProject,
     removeUsersFromProject,
     fetchUserOfProjects,
-    getProjectById
+    getProjectById,
+    updateProjectMemberRole
 }

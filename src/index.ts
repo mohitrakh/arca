@@ -7,6 +7,7 @@ import cors from "cors";
 import orgRouter from "./modules/organizations/org.route";
 import projectRouter from "./modules/projects/projects.route";
 import taskRouter from "./modules/tasks/tasks.route";
+import clientRouter from "./modules/clients/clients.route";
 
 const app = express();
 app.use(
@@ -26,6 +27,7 @@ app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/organizations", orgRouter);
 app.use("/api/v1/projects", projectRouter);
 app.use("/api/v1/tasks", taskRouter);
+app.use("/api/v1/clients", clientRouter);
 
 
 app.use(globalErrorHandler);

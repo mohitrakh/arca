@@ -32,3 +32,9 @@ export const addMembersToProjectSchema = z.object({
 });
 
 export type AddMembersToProjectInput = z.infer<typeof addMembersToProjectSchema>
+
+export const updateProjectMemberRoleSchema = z.object({
+    role: z.enum(PROJECT_ROLE_VALUES),
+});
+
+export type UpdateProjectMemberRoleInput = z.infer<typeof updateProjectMemberRoleSchema>;
