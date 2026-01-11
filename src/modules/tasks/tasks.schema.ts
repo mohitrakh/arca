@@ -38,7 +38,11 @@ export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 // Update Task Payload
 
 // 2. Create the Update schema by making the Create schema partial
-export const updateTaskSchema = createTaskSchema.partial().refine(
+export const updateTaskSchema = createTaskSchema.partial().extend({
+    // Optimistic Concurrency Control:
+    // Client sends the version it read. We check if it matches DB version.
+    version: z.number().int().optional()
+}).refine(
     (data) => Object.keys(data).length > 0,
     { message: "At least one field must be provided for update" }
 );

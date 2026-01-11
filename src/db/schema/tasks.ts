@@ -1,4 +1,4 @@
-import { date, mysqlEnum, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
+import { date, int, mysqlEnum, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
 import { createId } from '@paralleldrive/cuid2';
 import { organizationTable } from './organization';
 import { userTable } from './users';
@@ -19,5 +19,6 @@ export const taskTable = mysqlTable('tasks', {
     updated_at: timestamp('updated_at').notNull().defaultNow(),
     created_by: varchar({ length: 128 })
         .notNull()
-        .references(() => userTable.id, { onDelete: 'restrict' })
+        .references(() => userTable.id, { onDelete: 'restrict' }),
+    version: int('version').notNull().default(1)
 });
