@@ -50,6 +50,22 @@ const addMembersToOrg = async (
   );
 };
 
+const acceptMembersToOrg = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.body.token;
+  const userId = req.auth?.userId!;
+  const result = await OrganizatonService.acceptMembersToOrg(token, userId);
+  return ApiResponse.success(
+    res,
+    result,
+    "Successfully accepted invitation to organization",
+    201
+  );
+};
+
 const removeMembersFromOrg = async (
   req: Request,
   res: Response,
@@ -67,4 +83,4 @@ const removeMembersFromOrg = async (
   );
 };
 
-export { createOrganization, getOrganizations, addMembersToOrg, removeMembersFromOrg };
+export { createOrganization, getOrganizations, addMembersToOrg, acceptMembersToOrg, removeMembersFromOrg };

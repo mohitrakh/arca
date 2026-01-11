@@ -164,6 +164,7 @@ export class ProjectService {
 
         const data = await db.select({
             id: projectMembershipTable.id,
+            userId: userTable.id,
             name: userTable.name,
             email: userTable.email,
             role: projectMembershipTable.role

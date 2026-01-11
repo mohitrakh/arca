@@ -1,7 +1,8 @@
 import express from "express";
 import { validate } from "../../middleware/validate";
-import { addUserToOrgSchema, createOrgSchema } from "./org.schema";
+import { acceptOrgInviteSchema, addUserToOrgSchema, createOrgSchema } from "./org.schema";
 import {
+  acceptMembersToOrg,
   addMembersToOrg,
   createOrganization,
   getOrganizations,
@@ -26,6 +27,15 @@ orgRouter.post(
   resolveOrganization,
   validate(addUserToOrgSchema),
   addMembersToOrg
+);
+
+// accept members to organization
+orgRouter.post(
+  "/members/accept",
+  requireAuth,
+  resolveOrganization,
+  validate(acceptOrgInviteSchema),
+  acceptMembersToOrg
 );
 
 // remove members from organizations

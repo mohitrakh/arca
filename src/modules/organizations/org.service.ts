@@ -132,6 +132,34 @@ export default class OrganizatonService {
     return { message: "Invitation sent successfully" };
   }
 
+  static async acceptMembersToOrg(
+    token: string,
+    userId: string
+  ) {
+    const [invite] = await db.select().from(organizationInvitesTable).where(
+      and(
+        eq(organizationInvitesTable.token, token),
+        eq(organizationInvitesTable.status, ORG_INVITE_STATUS.PENDING as OrgInviteStatus)
+      )
+    )
+
+    if (!invite) throw new AppError("Invalid invite", 400);
+
+    return await db.transaction(async (tx) => {
+      await tx.insert(orgMembershipTable).values({
+        organization_id: invite.organization_id,
+        user_id: userId,
+        role: invite.role,
+        is_active: true,
+        joined_at: new Date(),
+      });
+
+      await tx.delete(organizationInvitesTable).where(
+        eq(organizationInvitesTable.token, token)
+      );
+    });
+  }
+
   static async removeMembersFromOrg(
     orgId: string,
     userRole: string,

@@ -18,3 +18,9 @@ export const addUserToOrgSchema = z.object({
 })
 
 export type AddUserToOrgInput = z.infer<typeof addUserToOrgSchema>;
+
+export const acceptOrgInviteSchema = z.object({
+    token: z.string("Invalid token"),
+})
+
+export type AcceptOrgInviteInput = z.infer<typeof acceptOrgInviteSchema>;
