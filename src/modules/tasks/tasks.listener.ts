@@ -7,4 +7,10 @@ export function initTaskListeners() {
         console.log(`[Audit Log]: Task ${taskId} created by ${userId}`);
         // Here you would call your EmailService or WebSocketService
     });
+
+    eventBus.on(DOMAIN_EVENTS.TASK.STATUS_CHANGED, async (data) => {
+        const { taskId, userId } = data;
+
+        console.log(`[Audit Log]: Task ${taskId} status changed by ${userId}`);
+    })
 }
