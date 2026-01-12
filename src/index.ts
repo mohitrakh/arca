@@ -8,8 +8,10 @@ import orgRouter from "./modules/organizations/org.route";
 import projectRouter from "./modules/projects/projects.route";
 import taskRouter from "./modules/tasks/tasks.route";
 import clientRouter from "./modules/clients/clients.route";
+import { initTaskListeners } from "./modules/tasks/tasks.listener";
 
 const app = express();
+initTaskListeners();
 app.use(
   cors({
     origin: "http://localhost:3000", // or your frontend URL

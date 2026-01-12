@@ -55,8 +55,3 @@ No scheduler exists for deadline checks.
   - Set up a scheduler (e.g., `node-cron` or `bullmq`).
   - Create a job: `checkOverdueTasks` runs hourly -> updates status to `OVERDUE` -> triggers `TaskOverdueEvent`.
 
-### 4. Concurrency Control
-To prevent "Lost Update" problems when two users edit a task simultaneously.
-- **Action**:
-  - Add `version` (int) column to `tasks` table.
-  - Update `updateTask` to check `version` on write (Optimistic Locking).

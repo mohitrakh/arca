@@ -5,10 +5,12 @@ import { CreateTaskInput, ListTasksInput, UpdateTaskInput } from "./tasks.schema
 import { and, count, eq, sql } from "drizzle-orm";
 import { AppError } from "../../utils/app-error";
 import { TaskStatus } from "../../constants/task";
+import { DOMAIN_EVENTS, eventBus } from "../../utils/event-bus";
 
 export default class TaskService {
     static async createtask(payload: CreateTaskInput, projectId: string, organizationId: string, userId: string) {
-        return await db.insert(taskTable).values({
+        console.log("Hello Task is being created Wallahi")
+        const res = await db.insert(taskTable).values({
             title: payload.title,
             description: payload.description,
             assigned_to: payload.assigned_to,
@@ -20,6 +22,9 @@ export default class TaskService {
             created_by: userId,
             status: 'CREATED'
         }).$returningId();
+        eventBus.emit(DOMAIN_EVENTS.TASK.CREATED, { taskId: res[0].id, userId });
+
+        return res
     }
 
     static async listTasks(
