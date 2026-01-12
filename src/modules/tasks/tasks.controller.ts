@@ -63,7 +63,9 @@ const updateTaskStatus = async (req: Request, res: Response, next: NextFunction)
     const { taskId } = req.params;
     const orgId = req.org?.id!
     const projectId = req.project?.id!
-    const result = await TaskService.updateTaskStatus(taskId, orgId, projectId, req.body);
+    const userId = req.auth?.userId!
+    const projectRole = req.project?.role!
+    const result = await TaskService.updateTaskStatus(taskId, orgId, projectId, userId, projectRole, req.body);
     // Send paginated response
     return ApiResponse.success(res, result, "Task updated successfully", 200);
 };

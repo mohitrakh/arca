@@ -185,7 +185,7 @@ export default class TaskService {
         return task[0];
     }
 
-    static async updateTaskStatus(taskId: string, orgId: string, projectId: string, status: TaskStatus) {
+    static async updateTaskStatus(taskId: string, orgId: string, projectId: string, userId: string, projectRole: string, status: TaskStatus) {
         const task = await db.select().from(taskTable).where(
             and(
                 eq(taskTable.id, taskId),
@@ -196,6 +196,10 @@ export default class TaskService {
 
         if (!task.length || !task[0]) {
             throw new AppError('Task not found', 404);
+        }
+
+        if (userId !== task[0].assigned_to && projectRole !== 'PROJECT_MANAGER') {
+            throw new AppError('You are not authorized to update this task', 403);
         }
 
         const updateData = {
