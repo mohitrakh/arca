@@ -202,17 +202,30 @@ export default class TaskService {
             throw new AppError('You are not authorized to update this task', 403);
         }
 
+        const oldStatus = task[0].status;
+
         const updateData = {
             status,
             updated_at: new Date()
         };
 
-        return await db.update(taskTable).set(updateData).where(
+        const result = await db.update(taskTable).set(updateData).where(
             and(
                 eq(taskTable.id, taskId),
                 eq(taskTable.organization_id, orgId),
                 eq(taskTable.project_id, projectId)
             )
         );
+
+        if (oldStatus !== status) {
+            eventBus.emit(DOMAIN_EVENTS.TASK.STATUS_CHANGED, {
+                taskId,
+                userId,
+                oldStatus,
+                newStatus: status
+            });
+        }
+
+        return result;
     }
 }

@@ -9,9 +9,11 @@ import projectRouter from "./modules/projects/projects.route";
 import taskRouter from "./modules/tasks/tasks.route";
 import clientRouter from "./modules/clients/clients.route";
 import { initTaskListeners } from "./modules/tasks/tasks.listener";
+import { initTaskScheduler } from "./modules/tasks/tasks.scheduler";
 
 const app = express();
 initTaskListeners();
+initTaskScheduler()
 app.use(
   cors({
     origin: "http://localhost:3000", // or your frontend URL
